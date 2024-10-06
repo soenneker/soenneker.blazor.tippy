@@ -33,11 +33,11 @@ public class TippyInterop : ITippyInterop
         });
     }
 
-    public async ValueTask Init(string elementId, string templateId, TippyOptions tippyOptions, CancellationToken cancellationToken = default)
+    public async ValueTask Init(string elementId, TippyOptions tippyOptions, CancellationToken cancellationToken = default)
     {
         await _scriptInitializer.Get(cancellationToken).NoSync();
 
-        await _jsRuntime.InvokeVoidAsync("TippyInterop.init", cancellationToken, elementId, templateId, tippyOptions);
+        await _jsRuntime.InvokeVoidAsync("TippyInterop.init", cancellationToken, elementId, tippyOptions);
     }
 
     public async ValueTask Hide(string elementId, CancellationToken cancellationToken = default)

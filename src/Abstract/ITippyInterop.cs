@@ -10,7 +10,7 @@ namespace Soenneker.Blazor.Tippy.Abstract;
 /// </summary>
 public interface ITippyInterop : IAsyncDisposable
 {
-    ValueTask Init(string elementId, string templateId, TippyOptions tippyOptions, CancellationToken cancellationToken = default);
+    ValueTask Init(string elementId, TippyOptions tippyOptions, CancellationToken cancellationToken = default);
 
     ValueTask Hide(string elementId, CancellationToken cancellationToken = default);
 }
