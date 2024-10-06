@@ -28,7 +28,7 @@ Scripts and styles will get dynamically and lazily loaded for you.
 2. Inject `ITippyInterop` within your `App.Razor` file
 
 
-```csharp
+```razor
 @using Soenneker.Blazor.Masonry.Abstract
 @inject ITippyInterop TippyInterop
 
