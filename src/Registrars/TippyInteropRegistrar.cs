@@ -13,9 +13,11 @@ public static class TippyInteropRegistrar
     /// <summary>
     /// Adds <see cref="ITippyInterop"/> as a scoped service. <para/>
     /// </summary>
-    public static void AddTippy(this IServiceCollection services)
+    public static IServiceCollection AddTippyInteropAsScoped(this IServiceCollection services)
     {
         services.AddResourceLoader();
         services.TryAddScoped<ITippyInterop, TippyInterop>();
+
+        return services;
     }
 }
