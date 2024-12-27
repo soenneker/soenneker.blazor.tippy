@@ -42,6 +42,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Blazor.Utils.ResourceLoader" Version="3.0.797" />
+        <PackageReference Include="Soenneker.Blazor.Utils.ResourceLoader" Version="3.0.799" />
     </ItemGroup>
 </Project>
