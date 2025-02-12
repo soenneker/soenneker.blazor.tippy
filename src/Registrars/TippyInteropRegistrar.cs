@@ -15,8 +15,8 @@ public static class TippyInteropRegistrar
     /// </summary>
     public static IServiceCollection AddTippyInteropAsScoped(this IServiceCollection services)
     {
-        services.AddResourceLoaderAsScoped();
-        services.TryAddScoped<ITippyInterop, TippyInterop>();
+        services.AddResourceLoaderAsScoped()
+                .TryAddScoped<ITippyInterop, TippyInterop>();
 
         return services;
     }

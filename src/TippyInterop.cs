@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
@@ -15,14 +16,14 @@ public class TippyInterop : ITippyInterop
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
 
-    private readonly AsyncSingleton<object> _scriptInitializer;
+    private readonly AsyncSingleton _scriptInitializer;
 
     public TippyInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader)
     {
         _jsRuntime = jSRuntime;
         _resourceLoader = resourceLoader;
 
-        _scriptInitializer = new AsyncSingleton<object>(async (token, _) => {
+        _scriptInitializer = new AsyncSingleton(async (token, _) => {
 
             await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.Tippy/tippyinterop.js", "TippyInterop", 100, token).NoSync();
             await _resourceLoader.LoadStyle("https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.css", "sha256-WWn0l9kVjXaC+CGcbxP6Zyac31v1Cjkx2VMnFR3uVng=", cancellationToken: token).NoSync();
@@ -35,18 +36,22 @@ public class TippyInterop : ITippyInterop
 
     public async ValueTask Init(string elementId, TippyOptions tippyOptions, CancellationToken cancellationToken = default)
     {
-        await _scriptInitializer.Get(cancellationToken).NoSync();
+        await _scriptInitializer.Init(cancellationToken).NoSync();
 
-        await _jsRuntime.InvokeVoidAsync("TippyInterop.init", cancellationToken, elementId, tippyOptions);
+        await _jsRuntime.InvokeVoidAsync("TippyInterop.init", cancellationToken, elementId, tippyOptions).NoSync();
     }
 
-    public async ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
+    public ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
     {
-        await _jsRuntime.InvokeVoidAsync("TippyInterop.hide", cancellationToken, elementId);
+        return _jsRuntime.InvokeVoidAsync("TippyInterop.hide", cancellationToken, elementId);
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _resourceLoader.DisposeModule("Soenneker.Blazor.Tippy/tippyinterop.js");
+        GC.SuppressFinalize(this);
+
+        await _resourceLoader.DisposeModule("Soenneker.Blazor.Tippy/tippyinterop.js").NoSync();
+
+        await _scriptInitializer.DisposeAsync().NoSync();
     }
 }
