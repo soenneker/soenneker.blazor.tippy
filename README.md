@@ -19,7 +19,7 @@ dotnet add package Soenneker.Blazor.Tippy
 public static async Task Main(string[] args)
 {
     ...
-    builder.Services.AddTippy();
+    builder.Services.AddTippyInteropAsScoped();
 }
 ```
 

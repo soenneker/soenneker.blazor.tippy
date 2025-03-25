@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using System.Threading;
-using Soenneker.Blazor.Tippy.Options;
 using System;
+using Soenneker.Blazor.Tippy.Configuration;
 
 namespace Soenneker.Blazor.Tippy.Abstract;
 
@@ -10,7 +10,11 @@ namespace Soenneker.Blazor.Tippy.Abstract;
 /// </summary>
 public interface ITippyInterop : IAsyncDisposable
 {
-    ValueTask Init(string elementId, TippyOptions tippyOptions, CancellationToken cancellationToken = default);
+    ValueTask Initialize(string elementId, TippyConfiguration tippyConfiguration, CancellationToken cancellationToken = default);
 
     ValueTask Hide(string elementId, CancellationToken cancellationToken = default);
+
+    ValueTask Show(string elementId, CancellationToken cancellationToken = default);
+
+    ValueTask Destroy(string elementId, CancellationToken cancellationToken = default);
 }

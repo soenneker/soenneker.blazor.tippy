@@ -1,0 +1,52 @@
+﻿@using System.Threading
+@using Soenneker.Blazor.Tippy.Abstract
+@using Soenneker.Blazor.Tippy.Configuration
+@using Soenneker.Extensions.Task
+@using Soenneker.Extensions.ValueTask
+
+@inject ITippyInterop TippyInterop
+@implements IAsyncDisposable
+
+<div id="@ElementId" @attributes="Attributes" ></div>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object?>? Attributes { get; set; }
+
+    [Parameter]
+    public TippyConfiguration Configuration { get; set; } = new();
+
+    public string ElementId = $"tippy-{Guid.NewGuid().ToString()}";
+
+    protected readonly CancellationTokenSource CTs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TippyInterop.Initialize(ElementId, Configuration, CTs.Token).NoSync();
+    }
+
+    public async ValueTask Show(CancellationToken cancellationToken = default)
+    {
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
+        await TippyInterop.Show(ElementId, linkedCts.Token);
+    }
+
+    public async ValueTask Hide(CancellationToken cancellationToken = default)
+    {
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
+        await TippyInterop.Hide(ElementId, linkedCts.Token);
+    }
+
+    public async ValueTask Destroy(CancellationToken cancellationToken = default)
+    {
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
+        await TippyInterop.Destroy(ElementId, linkedCts.Token);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        await CTs.CancelAsync().NoSync();
+    }
+
+}
