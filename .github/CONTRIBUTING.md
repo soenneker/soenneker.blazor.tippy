@@ -1,4 +1,4 @@
-# Contributing to Soenneker.Blazor.Tippy
+﻿# Contributing to Soenneker.Blazor.Tippy
 
 We're excited that you're interested in contributing!
 
