@@ -11,7 +11,7 @@ using Soenneker.Utils.AsyncSingleton;
 namespace Soenneker.Blazor.Tippy;
 
 ///<inheritdoc cref="ITippyInterop"/>
-public class TippyInterop : ITippyInterop
+public sealed class TippyInterop : ITippyInterop
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
