@@ -86,8 +86,6 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask DisposeAsync()
     {
-        GC.SuppressFinalize(this);
-
         await _resourceLoader.DisposeModule(_module).NoSync();
 
         await _scriptInitializer.DisposeAsync().NoSync();
