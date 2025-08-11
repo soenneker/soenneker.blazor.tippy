@@ -1,11 +1,12 @@
 ﻿@using System.Threading
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
-@using Soenneker.Extensions.Task
 @using Soenneker.Extensions.ValueTask
+@using Soenneker.Extensions.CancellationTokens
 
 @inject ITippyInterop TippyInterop
-@implements IAsyncDisposable
+
+@inherits Soenneker.Quark.Components.Cancellable.CancellableComponent
 
 <div id="@ElementId" @attributes="Attributes" ></div>
 
@@ -18,35 +19,32 @@
 
     public string ElementId = $"tippy-{Guid.NewGuid().ToString()}";
 
-    protected readonly CancellationTokenSource CTs = new();
-
     protected override async Task OnInitializedAsync()
     {
-        await TippyInterop.Initialize(ElementId, Configuration, CTs.Token).NoSync();
+        await TippyInterop.Initialize(ElementId, Configuration, CancellationToken).NoSync();
     }
 
     public async ValueTask Show(CancellationToken cancellationToken = default)
     {
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
-        await TippyInterop.Show(ElementId, linkedCts.Token);
+        CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
+
+        using (cts)
+            await TippyInterop.Show(ElementId, linked).NoSync();
     }
 
     public async ValueTask Hide(CancellationToken cancellationToken = default)
     {
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
-        await TippyInterop.Hide(ElementId, linkedCts.Token);
+        CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
+
+        using (cts)
+            await TippyInterop.Hide(ElementId, linked).NoSync();
     }
 
     public async ValueTask Destroy(CancellationToken cancellationToken = default)
     {
-        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, CTs.Token);
-        await TippyInterop.Destroy(ElementId, linkedCts.Token);
-    }
+        CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
-    public async ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-        await CTs.CancelAsync().NoSync();
+        using (cts)
+            await TippyInterop.Destroy(ElementId, linked).NoSync();
     }
-
 }

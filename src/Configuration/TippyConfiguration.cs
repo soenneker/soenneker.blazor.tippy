@@ -2,7 +2,7 @@
 
 namespace Soenneker.Blazor.Tippy.Configuration;
 
-public record TippyConfiguration
+public sealed record TippyConfiguration
 {
     [JsonPropertyName("content")]
     public string? Content { get; set; }
