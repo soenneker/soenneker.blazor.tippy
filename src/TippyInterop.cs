@@ -36,26 +36,26 @@ public sealed class TippyInterop : ITippyInterop
             {
                 await _resourceLoader.LoadStyle("https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.css",
                                          "sha256-WWn0l9kVjXaC+CGcbxP6Zyac31v1Cjkx2VMnFR3uVng=", cancellationToken: token)
-                                     .NoSync();
+                                     ;
                 await _resourceLoader.LoadScriptAndWaitForVariable("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js", "Popper",
                                          "sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=", cancellationToken: token)
-                                     .NoSync();
+                                     ;
                 await _resourceLoader.LoadScriptAndWaitForVariable("https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.umd.js", "tippy",
                                          "sha256-AMOLcfKm4CGkIKi5aMXSELz3F7Q0SS0HKWOiTLtte1U=", cancellationToken: token)
-                                     .NoSync();
+                                     ;
             }
             else
             {
-                await _resourceLoader.LoadStyle("_content/Soenneker.Blazor.Tippy/css/tippy.css", cancellationToken: token).NoSync();
+                await _resourceLoader.LoadStyle("_content/Soenneker.Blazor.Tippy/css/tippy.css", cancellationToken: token);
 
                 await _resourceLoader.LoadScriptAndWaitForVariable("_content/Soenneker.Blazor.Tippy/js/popper.min.js", "Popper", cancellationToken: token)
-                                     .NoSync();
+                                     ;
 
                 await _resourceLoader.LoadScriptAndWaitForVariable("_content/Soenneker.Blazor.Tippy/js/tippy.umd.js", "tippy", cancellationToken: token)
-                                     .NoSync();
+                                     ;
             }
 
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable(_module, _moduleVariable, 100, token).NoSync();
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable(_module, _moduleVariable, 100, token);
 
             return new object();
         });
@@ -63,9 +63,9 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask Initialize(string elementId, TippyConfiguration tippyConfiguration, CancellationToken cancellationToken = default)
     {
-        await _scriptInitializer.Init(cancellationToken, tippyConfiguration.UseCdn).NoSync();
+        await _scriptInitializer.Init(cancellationToken, tippyConfiguration.UseCdn);
 
-        await _jsRuntime.InvokeVoidAsync($"{_moduleVariable}.initialize", cancellationToken, elementId, tippyConfiguration).NoSync();
+        await _jsRuntime.InvokeVoidAsync($"{_moduleVariable}.initialize", cancellationToken, elementId, tippyConfiguration);
     }
 
     public ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
@@ -85,8 +85,8 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask DisposeAsync()
     {
-        await _resourceLoader.DisposeModule(_module).NoSync();
+        await _resourceLoader.DisposeModule(_module);
 
-        await _scriptInitializer.DisposeAsync().NoSync();
+        await _scriptInitializer.DisposeAsync();
     }
 }

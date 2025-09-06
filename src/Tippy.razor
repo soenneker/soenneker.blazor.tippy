@@ -1,4 +1,4 @@
-﻿@using System.Threading
+@using System.Threading
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
 @using Soenneker.Extensions.ValueTask
@@ -21,7 +21,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await TippyInterop.Initialize(ElementId, Configuration, CancellationToken).NoSync();
+        await TippyInterop.Initialize(ElementId, Configuration, CancellationToken);
     }
 
     public async ValueTask Show(CancellationToken cancellationToken = default)
@@ -29,7 +29,7 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Show(ElementId, linked).NoSync();
+            await TippyInterop.Show(ElementId, linked);
     }
 
     public async ValueTask Hide(CancellationToken cancellationToken = default)
@@ -37,7 +37,7 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Hide(ElementId, linked).NoSync();
+            await TippyInterop.Hide(ElementId, linked);
     }
 
     public async ValueTask Destroy(CancellationToken cancellationToken = default)
@@ -45,6 +45,6 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Destroy(ElementId, linked).NoSync();
+            await TippyInterop.Destroy(ElementId, linked);
     }
 }
