@@ -1,19 +1,16 @@
 @using System.Threading
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
-@using Soenneker.Extensions.ValueTask
 @using Soenneker.Extensions.CancellationTokens
+@using Soenneker.Quark.Divs
 
 @inject ITippyInterop TippyInterop
 
 @inherits Soenneker.Quark.Components.Cancellable.CancellableComponent
 
-<div id="@ElementId" @attributes="Attributes" ></div>
+<Div Id="@ElementId" @attributes="BuildAttributes()" ></Div>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object?>? Attributes { get; set; }
-
     [Parameter]
     public TippyConfiguration Configuration { get; set; } = new();
 

@@ -4,7 +4,6 @@ using Microsoft.JSInterop;
 using Soenneker.Blazor.Tippy.Abstract;
 using Soenneker.Blazor.Tippy.Configuration;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
-using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.AsyncSingleton;
 
 namespace Soenneker.Blazor.Tippy;
