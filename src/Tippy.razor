@@ -2,23 +2,23 @@
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
 @using Soenneker.Extensions.CancellationTokens
-@using Soenneker.Quark.Divs
 
 @inject ITippyInterop TippyInterop
 
-@inherits Soenneker.Quark.Components.Cancellable.CancellableComponent
+@inherits Soenneker.Quark.Components.Core.Cancellable.CoreCancellableComponent
 
-<Div Id="@ElementId" @attributes="BuildAttributes()" ></Div>
+<div id="@Id" @attributes="Attributes"></div>
 
 @code {
     [Parameter]
     public TippyConfiguration Configuration { get; set; } = new();
 
-    public string ElementId = $"tippy-{Guid.NewGuid().ToString()}";
+    [Parameter]
+    public override string? Id { get; set; } = $"tippy-{Guid.NewGuid().ToString()}";
 
     protected override async Task OnInitializedAsync()
     {
-        await TippyInterop.Initialize(ElementId, Configuration, CancellationToken);
+        await TippyInterop.Initialize(Id!, Configuration, CancellationToken);
     }
 
     public async ValueTask Show(CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Show(ElementId, linked);
+            await TippyInterop.Show(Id!, linked);
     }
 
     public async ValueTask Hide(CancellationToken cancellationToken = default)
@@ -34,7 +34,7 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Hide(ElementId, linked);
+            await TippyInterop.Hide(Id!, linked);
     }
 
     public async ValueTask Destroy(CancellationToken cancellationToken = default)
@@ -42,6 +42,6 @@
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
-            await TippyInterop.Destroy(ElementId, linked);
+            await TippyInterop.Destroy(Id!, linked);
     }
 }
