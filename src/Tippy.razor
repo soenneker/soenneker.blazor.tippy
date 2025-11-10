@@ -16,9 +16,17 @@
     [Parameter]
     public override string? Id { get; set; } = $"tippy-{Guid.NewGuid().ToString()}";
 
-    protected override async Task OnInitializedAsync()
+    private bool _interopInitialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!firstRender && _interopInitialized)
+            return;
+
         await TippyInterop.Initialize(Id!, Configuration, CancellationToken);
+        _interopInitialized = true;
     }
 
     public async ValueTask Show(CancellationToken cancellationToken = default)
