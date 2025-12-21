@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using Soenneker.Blazor.Tippy.Abstract;
 using Soenneker.Blazor.Tippy.Configuration;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
-using Soenneker.Utils.AsyncSingleton;
+using Soenneker.Asyncs.Initializers;
 
 namespace Soenneker.Blazor.Tippy;
 
@@ -14,7 +14,7 @@ public sealed class TippyInterop : ITippyInterop
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
 
-    private readonly AsyncSingleton _scriptInitializer;
+    private readonly AsyncInitializer<TippyConfiguration> _scriptInitializer;
 
     private const string _module = "Soenneker.Blazor.Tippy/js/tippyinterop.js";
     private const string _moduleVariable = "TippyInterop";
@@ -24,14 +24,9 @@ public sealed class TippyInterop : ITippyInterop
         _jsRuntime = jSRuntime;
         _resourceLoader = resourceLoader;
 
-        _scriptInitializer = new AsyncSingleton(async (token, arr) =>
+        _scriptInitializer = new AsyncInitializer<TippyConfiguration>(async (config, token) =>
         {
-            var useCdn = true;
-
-            if (arr.Length > 0)
-                useCdn = (bool) arr[0];
-
-            if (useCdn)
+            if (config.UseCdn)
             {
                 await _resourceLoader.LoadStyle("https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy.css",
                                          "sha256-WWn0l9kVjXaC+CGcbxP6Zyac31v1Cjkx2VMnFR3uVng=", cancellationToken: token)
@@ -55,14 +50,12 @@ public sealed class TippyInterop : ITippyInterop
             }
 
             await _resourceLoader.ImportModuleAndWaitUntilAvailable(_module, _moduleVariable, 100, token);
-
-            return new object();
         });
     }
 
     public async ValueTask Initialize(string elementId, TippyConfiguration tippyConfiguration, CancellationToken cancellationToken = default)
     {
-        await _scriptInitializer.Init(cancellationToken, tippyConfiguration.UseCdn);
+        await _scriptInitializer.Init(tippyConfiguration, cancellationToken);
 
         await _jsRuntime.InvokeVoidAsync($"{_moduleVariable}.initialize", cancellationToken, elementId, tippyConfiguration);
     }
