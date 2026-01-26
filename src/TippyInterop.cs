@@ -63,28 +63,28 @@ public sealed class TippyInterop : ITippyInterop
         }
     }
 
-    public ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
+    public async ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
     {
         var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
         using (source)
-            return _jsRuntime.InvokeVoidAsync("TippyInterop.hide", linked, elementId);
+            await _jsRuntime.InvokeVoidAsync("TippyInterop.hide", linked, elementId);
     }
 
-    public ValueTask Show(string elementId, CancellationToken cancellationToken = default)
+    public async ValueTask Show(string elementId, CancellationToken cancellationToken = default)
     {
         var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
         using (source)
-            return _jsRuntime.InvokeVoidAsync("TippyInterop.show", linked, elementId);
+            await _jsRuntime.InvokeVoidAsync("TippyInterop.show", linked, elementId);
     }
 
-    public ValueTask Destroy(string elementId, CancellationToken cancellationToken = default)
+    public async ValueTask Destroy(string elementId, CancellationToken cancellationToken = default)
     {
         var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
         using (source)
-            return _jsRuntime.InvokeVoidAsync("TippyInterop.destroy", linked, elementId);
+            await _jsRuntime.InvokeVoidAsync("TippyInterop.destroy", linked, elementId);
     }
 
     public async ValueTask DisposeAsync()
