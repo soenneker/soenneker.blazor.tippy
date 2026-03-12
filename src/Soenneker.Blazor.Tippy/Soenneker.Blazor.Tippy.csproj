@@ -47,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Blazor.Utils.ResourceLoader" Version="4.0.1624" />
+        <PackageReference Include="Soenneker.Blazor.Utils.ResourceLoader" Version="4.0.1625" />
         <PackageReference Include="Soenneker.Quark.Components.Core.Cancellable" Version="4.0.53" />
     </ItemGroup>
 </Project>
