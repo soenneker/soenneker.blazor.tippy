@@ -19,7 +19,6 @@ public sealed class TippyInterop : ITippyInterop
     private readonly AsyncInitializer<TippyConfiguration> _scriptInitializer;
 
     private const string _module = "Soenneker.Blazor.Tippy/js/tippyinterop.js";
-    private const string _moduleVariable = "TippyInterop";
 
     private readonly CancellationScope _cancellationScope = new();
 
@@ -49,12 +48,12 @@ public sealed class TippyInterop : ITippyInterop
             await _resourceLoader.LoadScriptAndWaitForVariable("_content/Soenneker.Blazor.Tippy/js/tippy.umd.js", "tippy", cancellationToken: token);
         }
 
-        await _resourceLoader.ImportModuleAndWaitUntilAvailable(_module, _moduleVariable, 100, token);
+        await _resourceLoader.ImportModule(_module, token);
     }
 
     public async ValueTask Initialize(string elementId, TippyConfiguration tippyConfiguration, CancellationToken cancellationToken = default)
     {
-        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
+        CancellationToken linked = _cancellationScope.CancellationToken.Link(cancellationToken, out CancellationTokenSource? source);
 
         using (source)
         {
@@ -65,7 +64,7 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask Hide(string elementId, CancellationToken cancellationToken = default)
     {
-        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
+        CancellationToken linked = _cancellationScope.CancellationToken.Link(cancellationToken, out CancellationTokenSource? source);
 
         using (source)
             await _jsRuntime.InvokeVoidAsync("TippyInterop.hide", linked, elementId);
@@ -73,7 +72,7 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask Show(string elementId, CancellationToken cancellationToken = default)
     {
-        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
+        CancellationToken linked = _cancellationScope.CancellationToken.Link(cancellationToken, out CancellationTokenSource? source);
 
         using (source)
             await _jsRuntime.InvokeVoidAsync("TippyInterop.show", linked, elementId);
@@ -81,7 +80,7 @@ public sealed class TippyInterop : ITippyInterop
 
     public async ValueTask Destroy(string elementId, CancellationToken cancellationToken = default)
     {
-        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
+        CancellationToken linked = _cancellationScope.CancellationToken.Link(cancellationToken, out CancellationTokenSource? source);
 
         using (source)
             await _jsRuntime.InvokeVoidAsync("TippyInterop.destroy", linked, elementId);
