@@ -1,67 +1,61 @@
-export class TippyInterop {
-    constructor() {
-        this._tippyInstances = {};
-        this._observers = {};
-    }
+const tippyInstances = {};
+const observers = {};
 
-    initialize(elementId, options) {
-        const element = document.getElementById(elementId);
+export function initialize(elementId, options) {
+    const element = document.getElementById(elementId);
 
-        if (element) {
-            if (this._tippyInstances[elementId]) {
-                this._tippyInstances[elementId].destroy();
-            }
-
-            template.style.display = 'initial';
-
-            const opt = JSON.parse(options);
-            this._tippyInstances[elementId] = tippy(element, opt);
-
-            this.createObserver(elementId);
-        }
-    }
-
-    show(elementId) {
-        if (this._tippyInstances[elementId]) {
-            this._tippyInstances[elementId].show();
-        }
-    }
-
-    hide(elementId) {
-        if (this._tippyInstances[elementId]) {
-            this._tippyInstances[elementId].hide();
-        }
-    }
-
-    destroy(elementId) {
-        if (this._tippyInstances[elementId]) {
-            this._tippyInstances[elementId].destroy();
-            delete this._tippyInstances[elementId];
+    if (element) {
+        if (tippyInstances[elementId]) {
+            tippyInstances[elementId].destroy();
         }
 
-        if (this._observers[elementId]) {
-            this._observers[elementId].disconnect();
-            delete this._observers[elementId];
-        }
-    }
+        template.style.display = 'initial';
 
-    createObserver(elementId) {
-        const target = document.getElementById(elementId);
-        if (!target || !target.parentNode) return;
+        const opt = JSON.parse(options);
+        tippyInstances[elementId] = tippy(element, opt);
 
-        const observer = new MutationObserver((mutations) => {
-            const targetRemoved = mutations.some(mutation =>
-                Array.from(mutation.removedNodes).includes(target)
-            );
-
-            if (targetRemoved) {
-                this.destroy(elementId);
-            }
-        });
-
-        observer.observe(target.parentNode, { childList: true });
-        this._observers[elementId] = observer;
+        createObserver(elementId);
     }
 }
 
-window.TippyInterop = new TippyInterop();
+export function show(elementId) {
+    if (tippyInstances[elementId]) {
+        tippyInstances[elementId].show();
+    }
+}
+
+export function hide(elementId) {
+    if (tippyInstances[elementId]) {
+        tippyInstances[elementId].hide();
+    }
+}
+
+export function destroy(elementId) {
+    if (tippyInstances[elementId]) {
+        tippyInstances[elementId].destroy();
+        delete tippyInstances[elementId];
+    }
+
+    if (observers[elementId]) {
+        observers[elementId].disconnect();
+        delete observers[elementId];
+    }
+}
+
+function createObserver(elementId) {
+    const target = document.getElementById(elementId);
+    if (!target || !target.parentNode) return;
+
+    const observer = new MutationObserver((mutations) => {
+        const targetRemoved = mutations.some(mutation =>
+            Array.from(mutation.removedNodes).includes(target)
+        );
+
+        if (targetRemoved) {
+            destroy(elementId);
+        }
+    });
+
+    observer.observe(target.parentNode, { childList: true });
+    observers[elementId] = observer;
+}
