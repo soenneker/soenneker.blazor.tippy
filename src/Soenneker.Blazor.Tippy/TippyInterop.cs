@@ -15,7 +15,7 @@ namespace Soenneker.Blazor.Tippy;
 ///<inheritdoc cref="ITippyInterop"/>
 public sealed class TippyInterop : ITippyInterop
 {
-    private const string _modulePath = "/_content/Soenneker.Blazor.Tippy/js/tippyinterop.js";
+    private const string _modulePath = "_content/Soenneker.Blazor.Tippy/js/tippyinterop.js";
 
     private readonly IResourceLoader _resourceLoader;
     private readonly IModuleImportUtil _moduleImportUtil;
