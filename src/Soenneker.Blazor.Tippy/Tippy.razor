@@ -2,6 +2,7 @@
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
 @using Soenneker.Extensions.CancellationTokens
+@using Soenneker.Blazor.Utils.Ids
 
 @inject ITippyInterop TippyInterop
 
@@ -14,7 +15,7 @@
     public TippyConfiguration Configuration { get; set; } = new();
 
     [Parameter]
-    public override string? Id { get; set; } = $"tippy-{Guid.NewGuid().ToString()}";
+    public override string? Id { get; set; } = BlazorIdGenerator.New("tippy");
 
     private bool _interopInitialized;
 
