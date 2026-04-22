@@ -1,21 +1,19 @@
 using Soenneker.Blazor.Tippy.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
-
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Blazor.Tippy.Tests;
 
-[Collection("Collection")]
-public class TippyInteropTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class TippyInteropTests : HostedUnitTest
 {
     private readonly ITippyInterop _util;
 
-    public TippyInteropTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public TippyInteropTests(Host host) : base(host)
     {
         _util = Resolve<ITippyInterop>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
