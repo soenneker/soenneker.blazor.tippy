@@ -32,14 +32,6 @@ public sealed class TippyInterop : ITippyInterop
         _scriptInitializer = new AsyncInitializer<TippyConfiguration>(Initialize);
     }
 
-    private static string NormalizeContentUri(string uri)
-    {
-        if (string.IsNullOrEmpty(uri) || uri.Contains("://", StringComparison.Ordinal))
-            return uri;
-
-        return uri[0] == '/' ? uri : "/" + uri;
-    }
-
     private async ValueTask Initialize(TippyConfiguration config, CancellationToken token)
     {
         if (config.UseCdn)
@@ -53,10 +45,10 @@ public sealed class TippyInterop : ITippyInterop
         }
         else
         {
-            await _resourceLoader.LoadStyle(NormalizeContentUri("_content/Soenneker.Blazor.Tippy/css/tippy.css"), cancellationToken: token);
-            await _resourceLoader.LoadScriptAndWaitForVariable(NormalizeContentUri("_content/Soenneker.Blazor.Tippy/js/popper.min.js"), "Popper",
+            await _resourceLoader.LoadStyle("_content/Soenneker.Blazor.Tippy/css/tippy.css", cancellationToken: token);
+            await _resourceLoader.LoadScriptAndWaitForVariable("_content/Soenneker.Blazor.Tippy/js/popper.min.js", "Popper",
                 cancellationToken: token);
-            await _resourceLoader.LoadScriptAndWaitForVariable(NormalizeContentUri("_content/Soenneker.Blazor.Tippy/js/tippy.umd.js"), "tippy",
+            await _resourceLoader.LoadScriptAndWaitForVariable("_content/Soenneker.Blazor.Tippy/js/tippy.umd.js", "tippy",
                 cancellationToken: token);
         }
 
