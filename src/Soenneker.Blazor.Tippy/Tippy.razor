@@ -6,16 +6,17 @@
 
 @inject ITippyInterop TippyInterop
 
-@inherits Soenneker.Quark.CoreCancellableComponent
+@inherits Soenneker.Lepton.Suite.LeptonCancellableIdentifiableContentElement
 
-<div id="@Id" @attributes="Attributes"></div>
+<div id="@Id" @attributes="EffectiveAttributes"></div>
 
 @code {
     [Parameter]
     public TippyConfiguration Configuration { get; set; } = new();
-
-    [Parameter]
-    public override string? Id { get; set; } = BlazorIdGenerator.New("tippy");
+    public Tippy()
+    {
+        Id = BlazorIdGenerator.New("tippy");
+    }
 
     private bool _interopInitialized;
 
