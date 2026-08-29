@@ -12,7 +12,7 @@ using Soenneker.Utils.CancellationScopes;
 
 namespace Soenneker.Blazor.Tippy;
 
-///<inheritdoc cref="ITippyInterop"/>
+/// <inheritdoc cref="ITippyInterop"/>
 public sealed class TippyInterop : ITippyInterop
 {
     private const string _modulePath = "_content/Soenneker.Blazor.Tippy/js/tippyinterop.js";
