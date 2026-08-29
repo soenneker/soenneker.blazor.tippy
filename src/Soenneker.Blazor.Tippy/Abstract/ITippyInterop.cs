@@ -11,35 +11,35 @@ namespace Soenneker.Blazor.Tippy.Abstract;
 public interface ITippyInterop : IAsyncDisposable
 {
     /// <summary>
-    /// Executes the initialize operation.
+    /// Initializes the tippy so it is ready for use.
     /// </summary>
-    /// <param name="elementId">The element id.</param>
-    /// <param name="tippyConfiguration">The tippy configuration.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="elementId">ID of the DOM element to target.</param>
+    /// <param name="tippyConfiguration">tippy Configuration that supplies runtime settings.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the tippy is ready for use.</returns>
     ValueTask Initialize(string elementId, TippyConfiguration tippyConfiguration, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Executes the hide operation.
+    /// Hides tippy for the tippy.
     /// </summary>
-    /// <param name="elementId">The element id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="elementId">ID of the DOM element to target.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the hide operation is complete.</returns>
     ValueTask Hide(string elementId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Executes the show operation.
+    /// Shows tippy for the tippy.
     /// </summary>
-    /// <param name="elementId">The element id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="elementId">ID of the DOM element to target.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the show operation is complete.</returns>
     ValueTask Show(string elementId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Executes the destroy operation.
+    /// Releases the resources held by the tippy.
     /// </summary>
-    /// <param name="elementId">The element id.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <param name="elementId">ID of the DOM element to target.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the destroy operation is complete.</returns>
     ValueTask Destroy(string elementId, CancellationToken cancellationToken = default);
 }
