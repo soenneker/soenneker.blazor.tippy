@@ -3,59 +3,67 @@ const observers = {};
 
 export function initialize(elementId, options) {
     const element = document.getElementById(elementId);
+    if (!element)
+        throw new Error(`Tippy target '${elementId}' was not found.`);
 
-    if (element) {
-        if (tippyInstances[elementId]) {
-            tippyInstances[elementId].destroy();
-        }
+    destroy(elementId);
 
-        template.style.display = 'initial';
+    const parsedOptions = typeof options === "string" ? JSON.parse(options) : (options ?? {});
+    const { useCdn, ...tippyOptions } = parsedOptions;
 
-        const opt = JSON.parse(options);
-        tippyInstances[elementId] = tippy(element, opt);
-
-        createObserver(elementId);
-    }
+    tippyInstances[elementId] = globalThis.tippy(element, tippyOptions);
+    createObserver(elementId, element);
 }
 
 export function show(elementId) {
-    if (tippyInstances[elementId]) {
-        tippyInstances[elementId].show();
-    }
+    requireInstance(elementId).show();
 }
 
 export function hide(elementId) {
-    if (tippyInstances[elementId]) {
-        tippyInstances[elementId].hide();
-    }
+    requireInstance(elementId).hide();
 }
 
 export function destroy(elementId) {
-    if (tippyInstances[elementId]) {
-        tippyInstances[elementId].destroy();
+    const instance = tippyInstances[elementId];
+    if (instance) {
+        instance.destroy();
         delete tippyInstances[elementId];
     }
 
-    if (observers[elementId]) {
+    const observer = observers[elementId];
+    if (observer) {
+        observer.disconnect();
+        delete observers[elementId];
+    }
+}
+
+export function dispose() {
+    for (const elementId of Object.keys(tippyInstances))
+        destroy(elementId);
+
+    for (const elementId of Object.keys(observers)) {
         observers[elementId].disconnect();
         delete observers[elementId];
     }
 }
 
-function createObserver(elementId) {
-    const target = document.getElementById(elementId);
-    if (!target || !target.parentNode) return;
-
-    const observer = new MutationObserver((mutations) => {
-        const targetRemoved = mutations.some(mutation =>
-            Array.from(mutation.removedNodes).includes(target)
-        );
-
-        if (targetRemoved) {
+function createObserver(elementId, target) {
+    const observer = new MutationObserver(() => {
+        if (!target.isConnected)
             destroy(elementId);
-        }
     });
 
-    observer.observe(target.parentNode, { childList: true });
-    observers[elementId] = observer;
+    const observationRoot = document.body ?? document.documentElement;
+    if (observationRoot) {
+        observer.observe(observationRoot, { childList: true, subtree: true });
+        observers[elementId] = observer;
+    }
+}
+
+function requireInstance(elementId) {
+    const instance = tippyInstances[elementId];
+    if (!instance)
+        throw new Error(`Tippy instance '${elementId}' was not found.`);
+
+    return instance;
 }

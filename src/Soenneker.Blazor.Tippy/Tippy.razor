@@ -1,4 +1,5 @@
 @using System.Threading
+@using Microsoft.JSInterop
 @using Soenneker.Blazor.Tippy.Abstract
 @using Soenneker.Blazor.Tippy.Configuration
 @using Soenneker.Extensions.CancellationTokens
@@ -8,50 +9,129 @@
 
 @inherits Soenneker.Lepton.Suite.LeptonCancellableIdentifiableContentElement
 
-<div id="@Id" @attributes="EffectiveAttributes"></div>
+<div id="@Id" @attributes="EffectiveAttributes">@ChildContent</div>
 
 @code {
+    /// <summary>
+    /// Gets or sets the text, trigger, placement, theme, interactivity, and asset source used by the tooltip.
+    /// </summary>
     [Parameter]
     public TippyConfiguration Configuration { get; set; } = new();
+
+    /// <summary>
+    /// Invoked whenever the browser tooltip has been created or recreated with updated configuration.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnReady { get; set; }
+
+    /// <summary>
+    /// Initializes a new tooltip component with a unique element ID.
+    /// </summary>
     public Tippy()
     {
         Id = BlazorIdGenerator.New("tippy");
     }
 
     private bool _interopInitialized;
+    private bool _destroyed;
+    private TippyConfiguration? _appliedConfiguration;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (!firstRender && _interopInitialized)
+        if (_destroyed)
             return;
 
-        await TippyInterop.Initialize(Id!, Configuration, CancellationToken);
-        _interopInitialized = true;
+        TippyConfiguration configuration = Configuration ?? throw new InvalidOperationException($"{nameof(Configuration)} cannot be null.");
+
+        if (_interopInitialized && _appliedConfiguration == configuration)
+            return;
+
+        try
+        {
+            await TippyInterop.Initialize(Id!, configuration, CancellationToken);
+            _appliedConfiguration = configuration with { };
+            _interopInitialized = true;
+        }
+        catch
+        {
+            _interopInitialized = false;
+            _appliedConfiguration = null;
+            throw;
+        }
+
+        if (OnReady.HasDelegate)
+            await OnReady.InvokeAsync();
     }
 
+    /// <summary>
+    /// Shows the initialized tooltip.
+    /// </summary>
     public async ValueTask Show(CancellationToken cancellationToken = default)
     {
+        EnsureInitialized();
+
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
             await TippyInterop.Show(Id!, linked);
     }
 
+    /// <summary>
+    /// Hides the initialized tooltip.
+    /// </summary>
     public async ValueTask Hide(CancellationToken cancellationToken = default)
     {
+        EnsureInitialized();
+
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
             await TippyInterop.Hide(Id!, linked);
     }
 
+    /// <summary>
+    /// Permanently destroys this component's browser tooltip and removal observer.
+    /// </summary>
     public async ValueTask Destroy(CancellationToken cancellationToken = default)
     {
+        EnsureInitialized();
+
         CancellationToken linked = CancellationToken.Link(cancellationToken, out CancellationTokenSource? cts);
 
         using (cts)
             await TippyInterop.Destroy(Id!, linked);
+
+        _interopInitialized = false;
+        _destroyed = true;
+    }
+
+    private void EnsureInitialized()
+    {
+        if (_destroyed)
+            throw new InvalidOperationException("This Tippy component has been destroyed.");
+
+        if (!_interopInitialized)
+            throw new InvalidOperationException("Tippy is not ready. Wait for the OnReady callback before calling this method.");
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        if (_interopInitialized && Id is not null)
+        {
+            try
+            {
+                await TippyInterop.Destroy(Id);
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+
+        _interopInitialized = false;
+        _destroyed = true;
+        _appliedConfiguration = null;
+        await base.DisposeAsync();
     }
 }

@@ -23,6 +23,7 @@ public sealed class TippyInterop : ITippyInterop
     private readonly AsyncInitializer<TippyConfiguration> _scriptInitializer;
 
     private readonly CancellationScope _cancellationScope = new();
+    private bool _moduleInitialized;
 
     public TippyInterop(IResourceLoader resourceLoader, IModuleImportUtil moduleImportUtil)
     {
@@ -63,6 +64,7 @@ public sealed class TippyInterop : ITippyInterop
         {
             await _scriptInitializer.Init(tippyConfiguration, linked);
             IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
+            _moduleInitialized = true;
             await module.InvokeVoidAsync("initialize", linked, elementId, tippyConfiguration);
         }
     }
@@ -106,9 +108,20 @@ public sealed class TippyInterop : ITippyInterop
     /// <returns>A task that represents the asynchronous operation.</returns>
     public async ValueTask DisposeAsync()
     {
-        await _moduleImportUtil.DisposeContentModule(_modulePath);
+        if (_moduleInitialized)
+        {
+            try
+            {
+                IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath);
+                await module.InvokeVoidAsync("dispose");
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
 
-        await _scriptInitializer.DisposeAsync();
         await _cancellationScope.DisposeAsync();
+        await _scriptInitializer.DisposeAsync();
+        await _moduleImportUtil.DisposeContentModule(_modulePath);
     }
 }
