@@ -49,4 +49,7 @@
         <PackageReference Include="Soenneker.Blazor.Utils.ResourceLoader" Version="4.0.1768" />
         <PackageReference Include="Soenneker.Lepton.Suite" Version="4.0.93" />
     </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="Soenneker.Blazor.Tippy.TrimSmoke" />
+    </ItemGroup>
 </Project>

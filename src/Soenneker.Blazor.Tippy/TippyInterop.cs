@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ public sealed class TippyInterop : ITippyInterop
             await _scriptInitializer.Init(tippyConfiguration, linked);
             IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
             _moduleInitialized = true;
-            await module.InvokeVoidAsync("initialize", linked, elementId, tippyConfiguration);
+            await module.InvokeVoidAsync("initialize", linked, elementId, JsonSerializer.SerializeToElement(tippyConfiguration, InteropJsonContext.Default.TippyConfiguration));
         }
     }
 
