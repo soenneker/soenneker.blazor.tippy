@@ -63,10 +63,17 @@ public sealed class TippyInterop : ITippyInterop
 
         using (source)
         {
-            await _scriptInitializer.Init(tippyConfiguration, linked);
-            IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
-            _moduleInitialized = true;
-            await module.InvokeVoidAsync("initialize", linked, elementId, JsonSerializer.SerializeToElement(tippyConfiguration, InteropJsonContext.Default.TippyConfiguration));
+            try
+            {
+                await _scriptInitializer.Init(tippyConfiguration, linked);
+                IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
+                _moduleInitialized = true;
+                await module.InvokeVoidAsync("initialize", linked, elementId, JsonSerializer.SerializeToElement(tippyConfiguration, InteropJsonContext.Default.TippyConfiguration));
+            }
+            catch (JSException exception)
+            {
+                throw new JSException($"JavaScript operation 'TippyInterop.Initialize' failed: {exception.Message}", exception);
+            }
         }
     }
 
@@ -76,8 +83,15 @@ public sealed class TippyInterop : ITippyInterop
 
         using (source)
         {
-            IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
-            await module.InvokeVoidAsync("hide", linked, elementId);
+            try
+            {
+                IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
+                await module.InvokeVoidAsync("hide", linked, elementId);
+            }
+            catch (JSException exception)
+            {
+                throw new JSException($"JavaScript operation 'TippyInterop.Hide' failed: {exception.Message}", exception);
+            }
         }
     }
 
@@ -87,8 +101,15 @@ public sealed class TippyInterop : ITippyInterop
 
         using (source)
         {
-            IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
-            await module.InvokeVoidAsync("show", linked, elementId);
+            try
+            {
+                IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
+                await module.InvokeVoidAsync("show", linked, elementId);
+            }
+            catch (JSException exception)
+            {
+                throw new JSException($"JavaScript operation 'TippyInterop.Show' failed: {exception.Message}", exception);
+            }
         }
     }
 
@@ -98,8 +119,15 @@ public sealed class TippyInterop : ITippyInterop
 
         using (source)
         {
-            IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
-            await module.InvokeVoidAsync("destroy", linked, elementId);
+            try
+            {
+                IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, linked);
+                await module.InvokeVoidAsync("destroy", linked, elementId);
+            }
+            catch (JSException exception)
+            {
+                throw new JSException($"JavaScript operation 'TippyInterop.Destroy' failed: {exception.Message}", exception);
+            }
         }
     }
 
